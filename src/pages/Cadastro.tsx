@@ -1,11 +1,11 @@
-import { useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { AxiosError } from 'axios'
-
-import type { ErroApi, Usuario } from '../models/types'
-import { Context } from '../context/context'
-import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { useContext } from 'react'
+import { AxiosError } from 'axios'
+import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
+
+import { Context } from '../context/context'
+import type { Usuario } from '../models/types'
 
 export default function Cadastro() {
   const navigate = useNavigate()
@@ -14,6 +14,10 @@ export default function Cadastro() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Usuario>()
 
   async function cadastroUsuario({ nome, usuario, senha }: Usuario) {
+    const usuarioDuplicado = usuarios.filter(u => { return u.usuario === usuario })
+
+    if (usuarioDuplicado.length > 0) { throw new AxiosError("Usuário já cadastrado.") }
+
     await new Promise(resolve => setTimeout(resolve, 1200));
     setUsuarios([...usuarios, { nome, usuario, senha }])
   }
@@ -27,10 +31,10 @@ export default function Cadastro() {
       setTimeout(() => navigate('/login'), 1000)
 
     } catch (err) {
-      const erroAxios = err as AxiosError<ErroApi>
+      const erroAxios = err as AxiosError
 
       toast.error(
-        erroAxios.response?.data?.mensagem ||
+        erroAxios?.message ||
         'Não foi possível criar a conta. Verifique as credenciais.'
       )
     }

@@ -1,11 +1,12 @@
+import { toast } from 'sonner'
 import { useContext } from 'react'
 import { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import type { ErroApi, Usuario } from '../models/types'
-import { Context } from '../context/context'
+
 import { saveSession } from '../api/auth'
-import { toast } from 'sonner'
+import { Context } from '../context/context'
+import type { Usuario } from '../models/types'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -15,15 +16,17 @@ export default function Login() {
 
   async function login({ usuario, senha }: Usuario) {
     const usuarioEncontrado = usuarios.filter(u => { return u.usuario === usuario })
+
+    if (usuarioEncontrado.length === 0) { throw new AxiosError('Usuário incorreto.') }
+
     const senhasCombinam = usuarioEncontrado[0].senha === senha
 
-    const token = `${senha}${usuarioEncontrado[0].usuario}123`
-
     if (usuarioEncontrado && senhasCombinam) {
+      const token = `${senha}${usuarioEncontrado[0].usuario}123`
       return { token }
     }
 
-    throw new AxiosError
+    throw new AxiosError('Senha incorreta.')
   }
 
   async function handleLogin({ usuario, senha }: Usuario) {
@@ -36,11 +39,11 @@ export default function Login() {
       navigate('/arquivos')
 
     } catch (err) {
-      const erroAxios = err as AxiosError<ErroApi>
-
+      const erroAxios = err as AxiosError
+      console.log(erroAxios)
       toast.error(
-        erroAxios.response?.data?.mensagem ||
-        'Não foi possível logar na conta. Tente novamente usuário.'
+        erroAxios.message ||
+        'Não foi possível logar na conta. Tente novamente.'
       )
     }
   }

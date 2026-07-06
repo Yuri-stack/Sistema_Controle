@@ -14,10 +14,6 @@ export interface Sessao {
   usuario?: string
 }
 
-export interface ErroApi {
-  mensagem?: string
-}
-
 export type Usuario = {
   nome?: string;
   usuario: string;
