@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import type { ErroApi, Usuario } from '../models/types'
 import { Context } from '../context/context'
 import { saveSession } from '../api/auth'
+import { toast } from 'sonner'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -30,12 +31,14 @@ export default function Login() {
       const dados = await login({ usuario, senha })
 
       saveSession({ token: dados.token, usuario })
+
+      toast.success('Usuário autenticado com sucesso!')
       navigate('/arquivos')
 
     } catch (err) {
       const erroAxios = err as AxiosError<ErroApi>
 
-      alert(
+      toast.error(
         erroAxios.response?.data?.mensagem ||
         'Não foi possível logar na conta. Tente novamente usuário.'
       )

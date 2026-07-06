@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { clearSession, getUsuario, isAuthenticated } from '../api/auth'
+import { toast } from 'sonner'
 
 export default function Navbar() {
   const navigate = useNavigate()
@@ -8,6 +9,7 @@ export default function Navbar() {
   function sair() {
     clearSession()
     navigate('/login')
+    toast.info("Deslogado com sucesso.")
   }
 
   const linkClasse = ({ isActive }: { isActive: boolean }) =>

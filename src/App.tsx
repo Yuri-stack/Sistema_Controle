@@ -6,10 +6,12 @@ import Listagem from './pages/Listagem'
 import Upload from './pages/Upload'
 import { isAuthenticated } from './api/auth'
 import { Provider } from './context/context'
+import { Toaster } from 'sonner'
 
 export default function App() {
   return (
     <Provider>
+      <Toaster richColors />
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1">

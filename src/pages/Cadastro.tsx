@@ -5,6 +5,7 @@ import { AxiosError } from 'axios'
 import type { ErroApi, Usuario } from '../models/types'
 import { Context } from '../context/context'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function Cadastro() {
   const navigate = useNavigate()
@@ -22,15 +23,15 @@ export default function Cadastro() {
       await cadastroUsuario({ nome, usuario, senha });
       // await api.post('/register', { nome, usuario, senha })
 
-      alert("Conta criada! Redirecionando para o login...")
-      setTimeout(() => navigate('/login'), 1200)
+      toast.success("Conta criada! Redirecionando para o login...")
+      setTimeout(() => navigate('/login'), 1000)
 
     } catch (err) {
       const erroAxios = err as AxiosError<ErroApi>
 
-      alert(
+      toast.error(
         erroAxios.response?.data?.mensagem ||
-        'Não foi possível criar a conta. Tente outro usuário.'
+        'Não foi possível criar a conta. Verifique as credenciais.'
       )
     }
   }
