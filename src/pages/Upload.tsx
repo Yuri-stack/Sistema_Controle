@@ -3,7 +3,6 @@ import type { ChangeEvent, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
 import api from '../api/axios'
-import type { ErroApi } from '../models/types'
 
 export default function Upload() {
   const [nome, setNome] = useState('')
@@ -58,9 +57,9 @@ export default function Upload() {
       setSucesso(true)
       setTimeout(() => navigate('/arquivos'), 1000)
     } catch (err) {
-      const erroAxios = err as AxiosError<ErroApi>
+      const erroAxios = err as AxiosError
       setErro(
-        erroAxios.response?.data?.mensagem ||
+        erroAxios.message ||
         'Falha ao enviar o arquivo. Tente novamente.'
       )
     } finally {
