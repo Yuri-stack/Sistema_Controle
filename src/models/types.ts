@@ -28,8 +28,8 @@ export type ContextType = {
   usuarios: Usuario[]
   arquivos: Arquivo[]
 
+  setUsuarios: (usuarios: Usuario[]) => void
   setArquivos: (arquivos: Arquivo[]) => void
-  cadastroUsuario: ({ nome, usuario, senha }: Usuario) => void
   login: ({ usuario, senha }: Usuario) => Promise<{ token: string; }>
 }
 

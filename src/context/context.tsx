@@ -10,10 +10,6 @@ export function Provider({ children }: ProviderProps) {
 
     const [arquivos, setArquivos] = useState<Arquivo[]>([{ id: 123, nome: "React", criadoEm: '05/07/2026', data: '05/07/2026', tamanho: 128, url: 'url_do_barulho' }])
 
-    async function cadastroUsuario({ nome, usuario, senha }: Usuario) {
-        setUsuarios([...usuarios, { nome, usuario, senha }])
-    }
-
     async function login({ usuario, senha }: Usuario) {
         const usuarioEncontrado = usuarios.filter(u => { return u.usuario === usuario })
         const senhasCombinam = usuarioEncontrado[0].senha === senha
@@ -28,7 +24,7 @@ export function Provider({ children }: ProviderProps) {
     }
 
     return (
-        <Context.Provider value={{ usuarios, cadastroUsuario, login, arquivos, setArquivos }}>
+        <Context.Provider value={{ usuarios, setUsuarios, login, arquivos, setArquivos }}>
             {children}
         </Context.Provider>
     )
