@@ -30,7 +30,6 @@ export type ContextType = {
 
   setUsuarios: (usuarios: Usuario[]) => void
   setArquivos: (arquivos: Arquivo[]) => void
-  login: ({ usuario, senha }: Usuario) => Promise<{ token: string; }>
 }
 
 export interface ProviderProps {
