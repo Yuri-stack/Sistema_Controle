@@ -10,21 +10,29 @@ import { Arquivo } from '../models/types'
 export default function Upload() {
   const navigate = useNavigate()
 
-  const { register, handleSubmit, getValues, setValue, formState: { errors, isSubmitting } } = useForm<Arquivo>()
-  const { nome, conteudo } = getValues()
+  const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<Arquivo>({
+    defaultValues: {
+      nome: '',
+      conteudo: null
+    }
+  })
+  const { nome, conteudo } = watch()
 
   const inputRef = useRef<HTMLInputElement>(null)
 
   function handleArquivo(e: ChangeEvent<HTMLInputElement>) {
-    const conteudo = e.target.files?.[0]
-    if (!conteudo) return
+    const arquivoSelecionado = e.target.files?.[0]
+    if (!arquivoSelecionado) return
 
-    if (conteudo.type !== 'application/pdf') {
+    if (arquivoSelecionado.type !== 'application/pdf') {
       toast.error('Selecione um arquivo em formato PDF.')
       return
     }
 
-    if (!nome) { setValue('nome', conteudo.name.replace(/\.pdf$/i, '')) }
+    setValue('conteudo', arquivoSelecionado)
+    if (!nome) {
+      setValue('nome', arquivoSelecionado.name.replace(/\.pdf$/i, ''))
+    }
   }
 
   async function handleUpload() {
