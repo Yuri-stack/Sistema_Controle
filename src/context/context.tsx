@@ -7,7 +7,17 @@ export function Provider({ children }: ProviderProps) {
 
     const [usuarios, setUsuarios] = useState<Usuario[]>([])
 
-    const [arquivos, setArquivos] = useState<Arquivo[]>([{ id: 123, nome: "React", criadoEm: '05/07/2026', data: '05/07/2026', tamanho: 128, url: 'url_do_barulho' }])
+    const [arquivos, setArquivos] = useState<Arquivo[]>([
+        {
+            id: 123,
+            nome: "React",
+            criadoEm: '05/07/2026',
+            data: '05/07/2026',
+            tamanho: 128,
+            url: 'url_do_barulho',
+            conteudo: null
+        }
+    ])
 
     return (
         <Context.Provider value={{ usuarios, setUsuarios, arquivos, setArquivos }}>
