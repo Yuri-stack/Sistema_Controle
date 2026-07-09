@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 export interface Arquivo {
   id?: string | number
   nome: string
+  conteudo: File | null
   criadoEm?: string
   data?: string
   tamanho?: number

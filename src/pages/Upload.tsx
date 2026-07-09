@@ -1,69 +1,61 @@
-import { useRef, useState } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
+import { ChangeEvent, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 import { AxiosError } from 'axios'
+import { toast } from 'sonner'
+
 import api from '../api/axios'
+import { Arquivo } from '../models/types'
 
 export default function Upload() {
-  const [nome, setNome] = useState('')
-  const [arquivo, setArquivo] = useState<File | null>(null)
-  const [progresso, setProgresso] = useState(0)
-  const [enviando, setEnviando] = useState(false)
-  const [erro, setErro] = useState('')
-  const [sucesso, setSucesso] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
 
-  function handleArquivo(e: ChangeEvent<HTMLInputElement>) {
-    const arquivoSelecionado = e.target.files?.[0]
-    if (!arquivoSelecionado) return
+  const { register, handleSubmit, getValues, setValue, formState: { errors, isSubmitting } } = useForm<Arquivo>()
+  const { nome, conteudo } = getValues()
 
-    if (arquivoSelecionado.type !== 'application/pdf') {
-      setErro('Selecione um arquivo em formato PDF.')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function handleArquivo(e: ChangeEvent<HTMLInputElement>) {
+    const conteudo = e.target.files?.[0]
+    if (!conteudo) return
+
+    if (conteudo.type !== 'application/pdf') {
+      toast.error('Selecione um arquivo em formato PDF.')
       return
     }
 
-    setErro('')
-    setArquivo(arquivoSelecionado)
-    if (!nome) {
-      setNome(arquivoSelecionado.name.replace(/\.pdf$/i, ''))
-    }
+    if (!nome) { setValue('nome', conteudo.name.replace(/\.pdf$/i, '')) }
   }
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setErro('')
-
-    if (!nome || !arquivo) {
-      setErro('Informe o nome do arquivo e selecione um PDF.')
+  async function handleUpload() {
+    if (!nome || !conteudo) {
+      toast.error('Informe o nome do arquivo e selecione um PDF.')
       return
     }
 
     const formData = new FormData()
     formData.append('nome', nome)
-    formData.append('arquivo', arquivo)
+    formData.append('conteudo', conteudo)
 
-    setEnviando(true)
-    setProgresso(0)
     try {
       await api.post('/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (evento) => {
-          if (evento.total) {
-            setProgresso(Math.round((evento.loaded * 100) / evento.total))
-          }
-        },
+        // onUploadProgress: (evento) => {
+        //   if (evento.total) {
+        //     setProgresso(Math.round((evento.loaded * 100) / evento.total))
+        //   }
+        // },
       })
-      setSucesso(true)
+
+      toast.success('Usuário autenticado com sucesso!')
       setTimeout(() => navigate('/arquivos'), 1000)
+
     } catch (err) {
       const erroAxios = err as AxiosError
-      setErro(
+      toast.error(
         erroAxios.message ||
         'Falha ao enviar o arquivo. Tente novamente.'
       )
-    } finally {
-      setEnviando(false)
     }
   }
 
@@ -76,15 +68,14 @@ export default function Upload() {
             Dê um nome ao arquivo e selecione o PDF que deseja enviar.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(handleUpload)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1.5">
                 Nome do arquivo
               </label>
               <input
+                {...register("nome", { required: "O campo nome é obrigatório" })}
                 type="text"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
                 placeholder="Ex: Contrato de prestação de serviço"
                 className="w-full rounded-lg bg-dark-800 border border-dark-600 px-3.5 py-2.5 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
               />
@@ -105,13 +96,13 @@ export default function Upload() {
                   onChange={handleArquivo}
                   className="hidden"
                 />
-                {arquivo ? (
+                {conteudo ? (
                   <div className="flex items-center justify-center gap-2 text-sm">
                     <span className="h-7 w-7 rounded-md bg-accent-500/15 border border-accent-500/30 flex items-center justify-center text-accent-400 text-[10px] font-bold">
                       PDF
                     </span>
                     <span className="text-gray-200 font-medium">
-                      {arquivo.name}
+                      {conteudo.name}
                     </span>
                   </div>
                 ) : (
@@ -123,33 +114,29 @@ export default function Upload() {
               </div>
             </div>
 
-            {enviando && (
+            {isSubmitting && (
               <div className="w-full bg-dark-800 rounded-full h-2 overflow-hidden">
                 <div
                   className="h-full bg-linear-to-r from-brand-500 to-accent-500 transition-all"
-                  style={{ width: `${progresso}%` }}
+                // style={{ width: `${progresso}%` }}
                 />
               </div>
             )}
 
-            {erro && (
-              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-                {erro}
-              </p>
-            )}
-
-            {sucesso && (
-              <p className="text-sm text-accent-400 bg-accent-500/10 border border-accent-500/20 rounded-lg px-3 py-2">
-                Arquivo enviado! Redirecionando...
-              </p>
-            )}
+            {
+              Object.values(errors)[0]?.message && (
+                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                  {Object.values(errors)[0]?.message}
+                </p>
+              )
+            }
 
             <button
               type="submit"
-              disabled={enviando}
+              disabled={isSubmitting}
               className="w-full rounded-lg bg-linear-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 disabled:opacity-60 text-white font-semibold py-2.5 transition shadow-glow"
             >
-              {enviando ? `Enviando... ${progresso}%` : 'Enviar arquivo'}
+              {isSubmitting ? `Enviando...` : 'Enviar arquivo'}
             </button>
 
             <button

@@ -1,8 +1,8 @@
-import { toast } from 'sonner'
+import { Link, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 import { useContext } from 'react'
 import { AxiosError } from 'axios'
-import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 import { saveSession } from '../api/auth'
 import { Context } from '../context/context'
@@ -40,7 +40,6 @@ export default function Login() {
 
     } catch (err) {
       const erroAxios = err as AxiosError
-      console.log(erroAxios)
       toast.error(
         erroAxios.message ||
         'Não foi possível logar na conta. Tente novamente.'
