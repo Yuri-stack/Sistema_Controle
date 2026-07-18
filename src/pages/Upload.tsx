@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef } from 'react'
+import { ChangeEvent, useContext, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { AxiosError } from 'axios'
@@ -6,9 +6,11 @@ import { toast } from 'sonner'
 
 import api from '../api/axios'
 import { Arquivo } from '../models/types'
+import { Context } from '../context/context'
 
 export default function Upload() {
   const navigate = useNavigate()
+  const { usuarios } = useContext(Context)
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<Arquivo>({
     defaultValues: {
@@ -42,18 +44,31 @@ export default function Upload() {
     }
 
     const formData = new FormData()
+
     formData.append('nome', nome)
     formData.append('conteudo', conteudo)
 
     try {
-      await api.post('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        // onUploadProgress: (evento) => {
-        //   if (evento.total) {
-        //     setProgresso(Math.round((evento.loaded * 100) / evento.total))
-        //   }
-        // },
+      const response = await api.post("/arquivos", {
+        usuario_id: usuarios[0].nome,
+        nome_arquivo: nome
       })
+
+      const { url } = response.data
+
+      await api.put(url, conteudo, {
+        // headers: {
+        //   "Content-Type": "application/pdf",
+        // },
+      });
+      // await api.post('/upload', formData, {
+      // headers: { 'Content-Type': 'multipart/form-data' },
+      // onUploadProgress: (evento) => {
+      //   if (evento.total) {
+      //     setProgresso(Math.round((evento.loaded * 100) / evento.total))
+      //   }
+      // },
+      // })
 
       toast.success('Usuário autenticado com sucesso!')
       setTimeout(() => navigate('/arquivos'), 1000)
@@ -122,14 +137,14 @@ export default function Upload() {
               </div>
             </div>
 
-            {isSubmitting && (
+            {/* {isSubmitting && (
               <div className="w-full bg-dark-800 rounded-full h-2 overflow-hidden">
                 <div
                   className="h-full bg-linear-to-r from-brand-500 to-accent-500 transition-all"
-                // style={{ width: `${progresso}%` }}
+                  style={{ width: `${progresso}%` }}
                 />
               </div>
-            )}
+            )} */}
 
             {
               Object.values(errors)[0]?.message && (
