@@ -49,7 +49,7 @@ export default function Upload() {
     formData.append('conteudo', conteudo)
 
     try {
-      const response = await api.post("/arquivos", {
+      const response = await api.put("/arquivos", {
         usuario_id: usuarios[0].nome,
         nome_arquivo: nome
       })
