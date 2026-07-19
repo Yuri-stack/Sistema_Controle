@@ -48,9 +48,6 @@ export default function Upload() {
     formData.append('nome', nome)
     formData.append('conteudo', conteudo)
 
-    console.log(nome)
-    console.log(usuarios[0].nome)
-
     const nomeArquivo = `${nome}.pdf`
 
     try {
@@ -67,11 +64,6 @@ export default function Upload() {
         }
       })
 
-      // await api.put(url, conteudo, {
-      // headers: {
-      //   "Content-Type": "application/pdf",
-      // },
-      // });
       // await api.post('/upload', formData, {
       // headers: { 'Content-Type': 'multipart/form-data' },
       // onUploadProgress: (evento) => {
@@ -81,7 +73,7 @@ export default function Upload() {
       // },
       // })
 
-      toast.success('Usuário autenticado com sucesso!')
+      toast.success('Upload realizado com sucesso!')
       setTimeout(() => navigate('/arquivos'), 1000)
 
     } catch (err) {

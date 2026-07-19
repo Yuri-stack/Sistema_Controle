@@ -5,6 +5,7 @@ export interface Arquivo {
   nome: string
   conteudo: File | null
   criadoEm?: string
+  ultima_modificacao: string
   data?: string
   tamanho?: number
   url?: string

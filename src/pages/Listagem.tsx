@@ -1,23 +1,51 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
-import type { Arquivo } from '../models/types'
 import { Context } from '../context/context'
 import { formatarData, formatarTamanho } from '../lib/utils'
 
 export default function Listagem() {
-  const { arquivos, setArquivos } = useContext(Context)
+  const { arquivos, setArquivos, usuarios } = useContext(Context)
 
   const [carregando, setCarregando] = useState(false)
   // const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
+  // async function buscarArquivos() {
+  //   setCarregando(true)
+  //   setErro('')
+  //   try {
+  //     const { data } = await api.get<Arquivo[] | { arquivos: Arquivo[] }>('/arquivos')
+  //     setArquivos(Array.isArray(data) ? data : data.arquivos || [])
+
+  //     console.log(data)
+
+
+  //   } catch {
+  //     setErro('Não foi possível carregar os arquivos.')
+  //   } finally {
+  //     setCarregando(false)
+  //   }
+  // }
+
+  async function listarArquivos(userId: string) {
+    const response = await api.get("/arquivos", {
+      headers: {
+        "x-user-id": userId,
+      }
+    })
+
+    return response.data
+  }
+
   async function buscarArquivos() {
     setCarregando(true)
     setErro('')
     try {
-      const { data } = await api.get<Arquivo[] | { arquivos: Arquivo[] }>('/files')
-      setArquivos(Array.isArray(data) ? data : data.arquivos || [])
+
+      const data = await listarArquivos(usuarios[0].usuario);
+      setArquivos(data.arquivos);
+
     } catch {
       setErro('Não foi possível carregar os arquivos.')
     } finally {
@@ -25,9 +53,9 @@ export default function Listagem() {
     }
   }
 
-  // useEffect(() => {
-  //   buscarArquivos()
-  // }, [])
+  useEffect(() => {
+    buscarArquivos()
+  }, [])
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
@@ -96,7 +124,7 @@ export default function Listagem() {
                     </div>
                   </td>
                   <td className="px-5 py-3.5 text-gray-400">
-                    {formatarData(arquivo.criadoEm || arquivo.data)}
+                    {formatarData(arquivo.criadoEm || arquivo.ultima_modificacao)}
                   </td>
                   <td className="px-5 py-3.5 text-gray-400">
                     {formatarTamanho(arquivo.tamanho)}
