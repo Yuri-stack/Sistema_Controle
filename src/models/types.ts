@@ -1,14 +1,12 @@
 import { ReactNode } from "react";
 
 export interface Arquivo {
-  id?: string | number
   nome: string
   conteudo: File | null
   criadoEm?: string
   ultima_modificacao: string
-  data?: string
   tamanho?: number
-  url?: string
+  caminho?: string
 }
 
 export interface Sessao {
@@ -23,9 +21,11 @@ export type Usuario = {
 }
 
 export type ContextType = {
+  usuarioAtual: Usuario
   usuarios: Usuario[]
   arquivos: Arquivo[]
 
+  setUsuarioAtual: (usuario: Usuario) => void
   setUsuarios: (usuarios: Usuario[]) => void
   setArquivos: (arquivos: Arquivo[]) => void
 }

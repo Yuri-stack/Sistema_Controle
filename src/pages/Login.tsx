@@ -10,7 +10,7 @@ import type { Usuario } from '../models/types'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { usuarios } = useContext(Context)
+  const { usuarios, setUsuarioAtual } = useContext(Context)
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Usuario>()
 
@@ -18,6 +18,8 @@ export default function Login() {
     const usuarioEncontrado = usuarios.filter(u => { return u.usuario === usuario })
 
     if (usuarioEncontrado.length === 0) { throw new AxiosError('Usuário incorreto.') }
+
+    setUsuarioAtual(usuarioEncontrado[0])
 
     const senhasCombinam = usuarioEncontrado[0].senha === senha
 

@@ -5,22 +5,14 @@ export const Context = createContext({} as ContextType);
 
 export function Provider({ children }: ProviderProps) {
 
+    const [usuarioAtual, setUsuarioAtual] = useState<Usuario>({} as Usuario)
+
     const [usuarios, setUsuarios] = useState<Usuario[]>([])
 
-    const [arquivos, setArquivos] = useState<Arquivo[]>([
-        {
-            id: 123,
-            nome: "React",
-            criadoEm: '05/07/2026',
-            data: '05/07/2026',
-            tamanho: 128,
-            url: 'url_do_barulho',
-            conteudo: null
-        }
-    ])
+    const [arquivos, setArquivos] = useState<Arquivo[]>([])
 
     return (
-        <Context.Provider value={{ usuarios, setUsuarios, arquivos, setArquivos }}>
+        <Context.Provider value={{ usuarioAtual, setUsuarioAtual, usuarios, setUsuarios, arquivos, setArquivos }}>
             {children}
         </Context.Provider>
     )

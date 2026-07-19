@@ -5,11 +5,12 @@ import { Context } from '../context/context'
 import { formatarData, formatarTamanho } from '../lib/utils'
 
 export default function Listagem() {
-  const { arquivos, setArquivos, usuarios } = useContext(Context)
+  const { arquivos, setArquivos, usuarioAtual } = useContext(Context)
 
   const [carregando, setCarregando] = useState(false)
   // const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
+  const [url, setUrl] = useState('')
 
   // async function buscarArquivos() {
   //   setCarregando(true)
@@ -28,10 +29,20 @@ export default function Listagem() {
   //   }
   // }
 
-  async function listarArquivos(userId: string) {
+  async function buscaArquivoPorNome(usuario: string, nome: string) {
+    const response = await api.get(`/arquivos/${nome}`, {
+      headers: {
+        "x-user-id": usuario,
+      }
+    })
+
+    return response.data
+  }
+
+  async function listarArquivos(usuario: string) {
     const response = await api.get("/arquivos", {
       headers: {
-        "x-user-id": userId,
+        "x-user-id": usuario,
       }
     })
 
@@ -43,13 +54,23 @@ export default function Listagem() {
     setErro('')
     try {
 
-      const data = await listarArquivos(usuarios[0].usuario);
+      const data = await listarArquivos(usuarioAtual.usuario);
       setArquivos(data.arquivos);
 
     } catch {
       setErro('Não foi possível carregar os arquivos.')
     } finally {
       setCarregando(false)
+    }
+  }
+
+  async function acessaURL(nome: string) {
+    setErro('')
+    try {
+      const data = await buscaArquivoPorNome(usuarioAtual.usuario, nome);
+      setUrl(data.url);
+    } catch (error) {
+      setErro('Não foi possível carregar os arquivos.')
     }
   }
 
@@ -110,7 +131,7 @@ export default function Listagem() {
             <tbody>
               {arquivos.map((arquivo) => (
                 <tr
-                  key={arquivo.id}
+                  key={arquivo.nome + usuarioAtual}
                   className="border-b border-dark-800 last:border-0 hover:bg-dark-800/50 transition-colors"
                 >
                   <td className="px-5 py-3.5">
@@ -130,17 +151,19 @@ export default function Listagem() {
                     {formatarTamanho(arquivo.tamanho)}
                   </td>
                   <td className="px-5 py-3.5 text-right">
-                    {arquivo.url ? (
+                    {url === '' ? (
                       <a
-                        href={arquivo.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-accent-400 hover:text-accent-300 font-medium"
+                        className="text-blue-400 hover:text-accent-300 font-medium cursor-pointer"
+                        onClick={() => acessaURL(arquivo.nome)}
                       >
                         Baixar
                       </a>
                     ) : (
-                      <span className="text-gray-600">—</span>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-accent-400 hover:text-accent-300 font-medium cursor-pointer">Ver</a>
                     )}
                   </td>
                 </tr>
@@ -149,6 +172,6 @@ export default function Listagem() {
           </table>
         )}
       </div>
-    </div>
+    </div >
   )
 }
