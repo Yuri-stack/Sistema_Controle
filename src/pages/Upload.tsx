@@ -1,7 +1,7 @@
 import { ChangeEvent, useContext, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { AxiosError } from 'axios'
+import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
 
 import api from '../api/axios'
@@ -48,19 +48,30 @@ export default function Upload() {
     formData.append('nome', nome)
     formData.append('conteudo', conteudo)
 
+    console.log(nome)
+    console.log(usuarios[0].nome)
+
+    const nomeArquivo = `${nome}.pdf`
+
     try {
       const response = await api.put("/arquivos", {
         usuario_id: usuarios[0].nome,
-        nome_arquivo: nome
+        nome_arquivo: nomeArquivo
       })
 
       const { url } = response.data
 
-      await api.put(url, conteudo, {
-        // headers: {
-        //   "Content-Type": "application/pdf",
-        // },
-      });
+      await axios.put(url, conteudo, {
+        headers: {
+          'Content-Type': 'application/pdf'
+        }
+      })
+
+      // await api.put(url, conteudo, {
+      // headers: {
+      //   "Content-Type": "application/pdf",
+      // },
+      // });
       // await api.post('/upload', formData, {
       // headers: { 'Content-Type': 'multipart/form-data' },
       // onUploadProgress: (evento) => {
