@@ -4,7 +4,6 @@ import Cadastro from './pages/Cadastro'
 import Login from './pages/Login'
 import Listagem from './pages/Listagem'
 import Upload from './pages/Upload'
-import { isAuthenticated } from './api/auth'
 import { Provider } from './context/context'
 import { Toaster } from 'sonner'
 
@@ -16,30 +15,11 @@ export default function App() {
         <Navbar />
         <main className="flex-1">
           <Routes>
-            <Route
-              path="/"
-              element={
-                <Navigate to={isAuthenticated() ? '/arquivos' : '/login'} replace />
-              }
-            />
+            <Route path="/" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/login" element={<Login />} />
-            <Route
-              path="/arquivos"
-              element={
-                // <RotaPrivada>
-                <Listagem />
-                // </RotaPrivada>
-              }
-            />
-            <Route
-              path="/upload"
-              element={
-                // <RotaPrivada>
-                <Upload />
-                // </RotaPrivada>
-              }
-            />
+            <Route path="/arquivos" element={<Listagem />} />
+            <Route path="/upload" element={<Upload />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

@@ -1,8 +1,8 @@
 import { ChangeEvent, useContext, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
+import axios from 'axios'
 
 import api from '../api/axios'
 import { Arquivo } from '../models/types'
@@ -64,24 +64,11 @@ export default function Upload() {
         }
       })
 
-      // await api.post('/upload', formData, {
-      // headers: { 'Content-Type': 'multipart/form-data' },
-      // onUploadProgress: (evento) => {
-      //   if (evento.total) {
-      //     setProgresso(Math.round((evento.loaded * 100) / evento.total))
-      //   }
-      // },
-      // })
-
       toast.success('Upload realizado com sucesso!')
       setTimeout(() => navigate('/arquivos'), 1000)
 
     } catch (err) {
-      const erroAxios = err as AxiosError
-      toast.error(
-        erroAxios.message ||
-        'Falha ao enviar o arquivo. Tente novamente.'
-      )
+      toast.error('Falha ao enviar o arquivo. Tente novamente.')
     }
   }
 

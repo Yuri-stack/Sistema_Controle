@@ -25,7 +25,6 @@ export default function Cadastro() {
   async function handleRegister({ nome, usuario, senha }: Usuario) {
     try {
       await cadastroUsuario({ nome, usuario, senha });
-      // await api.post('/register', { nome, usuario, senha })
 
       toast.success("Conta criada! Redirecionando para o login...")
       setTimeout(() => navigate('/login'), 1000)

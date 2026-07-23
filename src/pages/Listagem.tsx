@@ -3,41 +3,13 @@ import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import { Context } from '../context/context'
 import { formatarData, formatarTamanho } from '../lib/utils'
+import ButtonStatus from '../components/button-status'
 
 export default function Listagem() {
   const { arquivos, setArquivos, usuarioAtual } = useContext(Context)
 
   const [carregando, setCarregando] = useState(false)
-  // const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
-  const [url, setUrl] = useState('')
-
-  // async function buscarArquivos() {
-  //   setCarregando(true)
-  //   setErro('')
-  //   try {
-  //     const { data } = await api.get<Arquivo[] | { arquivos: Arquivo[] }>('/arquivos')
-  //     setArquivos(Array.isArray(data) ? data : data.arquivos || [])
-
-  //     console.log(data)
-
-
-  //   } catch {
-  //     setErro('Não foi possível carregar os arquivos.')
-  //   } finally {
-  //     setCarregando(false)
-  //   }
-  // }
-
-  async function buscaArquivoPorNome(usuario: string, nome: string) {
-    const response = await api.get(`/arquivos/${nome}`, {
-      headers: {
-        "x-user-id": usuario,
-      }
-    })
-
-    return response.data
-  }
 
   async function listarArquivos(usuario: string) {
     const response = await api.get("/arquivos", {
@@ -61,16 +33,6 @@ export default function Listagem() {
       setErro('Não foi possível carregar os arquivos.')
     } finally {
       setCarregando(false)
-    }
-  }
-
-  async function acessaURL(nome: string) {
-    setErro('')
-    try {
-      const data = await buscaArquivoPorNome(usuarioAtual.usuario, nome);
-      setUrl(data.url);
-    } catch (error) {
-      setErro('Não foi possível carregar os arquivos.')
     }
   }
 
@@ -151,20 +113,7 @@ export default function Listagem() {
                     {formatarTamanho(arquivo.tamanho)}
                   </td>
                   <td className="px-5 py-3.5 text-right">
-                    {url === '' ? (
-                      <a
-                        className="text-blue-400 hover:text-accent-300 font-medium cursor-pointer"
-                        onClick={() => acessaURL(arquivo.nome)}
-                      >
-                        Baixar
-                      </a>
-                    ) : (
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-accent-400 hover:text-accent-300 font-medium cursor-pointer">Ver</a>
-                    )}
+                    <ButtonStatus nomeArquivo={arquivo.nome} handleErro={setErro} />
                   </td>
                 </tr>
               ))}
