@@ -1,12 +1,17 @@
+import { toast } from 'sonner'
+import { useContext } from 'react'
+import { Context } from '../context/context'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { clearSession, getUsuario, isAuthenticated } from '../api/auth'
-import { toast } from 'sonner'
+import { Usuario } from '../models/types'
 
 export default function Navbar() {
   const navigate = useNavigate()
   const autenticado = isAuthenticated()
+  const { setUsuarioAtual } = useContext(Context)
 
   function sair() {
+    setUsuarioAtual({} as Usuario)
     clearSession()
     navigate('/login')
     toast.info("Deslogado com sucesso.")
