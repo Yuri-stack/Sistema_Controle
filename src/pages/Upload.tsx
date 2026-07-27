@@ -10,7 +10,7 @@ import { Context } from '../context/context'
 
 export default function Upload() {
   const navigate = useNavigate()
-  const { usuarios } = useContext(Context)
+  const { usuarioAtual } = useContext(Context)
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<Arquivo>({
     defaultValues: {
@@ -52,7 +52,7 @@ export default function Upload() {
 
     try {
       const response = await api.put("/arquivos", {
-        usuario_id: usuarios[0].nome,
+        usuario_id: usuarioAtual.usuario,
         nome_arquivo: nomeArquivo
       })
 
